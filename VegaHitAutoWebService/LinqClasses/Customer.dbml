@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="ICARDMS" Class="CustomerDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=DC2\icardms;Initial Catalog=ICARDMS;User ID=kasa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="ICARDMSConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.[_RI_Vega_Customer]" Member="_RI_Vega_Customers">
+    <Type Name="_RI_Vega_Customer">
+      <Column Name="birthDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="City" Type="System.String" DbType="VarChar(25)" CanBeNull="true" />
+      <Column Name="eMAil1" Type="System.String" DbType="VarChar(64)" CanBeNull="true" />
+      <Column Name="eMail2" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="FirstName" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="ID" Type="System.Decimal" DbType="Decimal(10,0) NOT NULL" CanBeNull="false" />
+      <Column Name="lastName" Type="System.String" DbType="VarChar(25)" CanBeNull="true" />
+      <Column Name="marketingComment" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="marketingEMail" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="marketingFax" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="marketingMail" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="marketingPhone" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="marketingPreferred" Type="System.String" DbType="VarChar(1)" CanBeNull="true" />
+      <Column Name="marketingSMSMMS" Type="System.Int16" DbType="SmallInt NOT NULL" CanBeNull="false" />
+      <Column Name="marketingWelcomeTerminal" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="mobilePhone1" Type="System.String" DbType="VarChar(15)" CanBeNull="true" />
+      <Column Name="mobilePhone2" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="name" Type="System.String" DbType="VarChar(123)" CanBeNull="true" />
+      <Column Name="Phone1" Type="System.String" DbType="VarChar(15)" CanBeNull="true" />
+      <Column Name="Phone2" Type="System.String" DbType="VarChar(15)" CanBeNull="true" />
+      <Column Name="Sex" Type="System.Int16" DbType="SmallInt NOT NULL" CanBeNull="false" />
+      <Column Name="Street" Type="System.String" DbType="VarChar(30)" CanBeNull="true" />
+      <Column Name="TaxNumber" Type="System.String" DbType="VarChar(15)" CanBeNull="true" />
+      <Column Name="TaxPayer" Type="System.String" DbType="VarChar(5) NOT NULL" CanBeNull="false" />
+      <Column Name="ZipCide" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>
