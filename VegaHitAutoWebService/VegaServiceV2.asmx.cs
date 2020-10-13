@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Web;
 using System.Web.Services;
 using VegaHitAutoWebService.Classes;
@@ -115,6 +116,9 @@ namespace VegaHitAutoWebService
             {
 
                 if (birNumber != BIR) throw new Exception("Nepostojeci BIR broj");
+
+                DateTime.ParseExact(fromDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime.ParseExact(toDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
                 string dateFrom = DateTime.UtcNow.ToString("yyyy-MM-dd");
                 if (String.IsNullOrEmpty(fromDate)) fromDate = dateFrom;
@@ -378,7 +382,8 @@ namespace VegaHitAutoWebService
             {
                 VehicleInvoice vehicleInvoice = new VehicleInvoice();
                 vehicleInvoice.errorCode = "901";
-                if(ex is FormatException || ex is System.Data.SqlClient.SqlException) vehicleInvoice.errorText = "Doslo je do greske u formatu";
+                if(ex is FormatException) vehicleInvoice.errorText = "Doslo je do greske u formatu datuma";
+                else if (ex is System.Data.SqlClient.SqlException) vehicleInvoice.errorText = "Doslo je do greske u sql-u " + ex.Message;
                 else vehicleInvoice.errorText = "Opsta greska " + ex.Message;
                 VehicleInvoice[] vehicleInvoices = new VehicleInvoice[1];
                 vehicleInvoices[0] = vehicleInvoice;
