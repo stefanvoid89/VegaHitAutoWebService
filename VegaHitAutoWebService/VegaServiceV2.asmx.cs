@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
+using System.Data.SqlClient;
 using System.Web;
 using System.Web.Services;
 using VegaHitAutoWebService.Classes;
-using VegaHitAutoWebService.LinqClasses;
+
 
 namespace VegaHitAutoWebService
 {
@@ -16,6 +17,9 @@ namespace VegaHitAutoWebService
     public class VegaServiceV2 : System.Web.Services.WebService
     {
 
+
+        static string connetion_string = System.Configuration.ConfigurationManager.ConnectionStrings["ICARDMSConnectionString"].ConnectionString;
+        static string BIR = "89150020";
 
         [System.Web.Services.WebMethodAttribute()]
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute(
@@ -109,126 +113,263 @@ namespace VegaHitAutoWebService
 
             try
             {
+
+                if (birNumber != BIR) throw new Exception("Nepostojeci BIR broj");
+
+                string dateFrom = DateTime.UtcNow.ToString("yyyy-MM-dd");
+                if (String.IsNullOrEmpty(fromDate)) fromDate = dateFrom;
+                if (String.IsNullOrEmpty(toDate)) toDate = dateFrom;
+
+
+                if (System.Data.Linq.SqlClient.SqlMethods.DateDiffDay(DateTime.Parse(fromDate), DateTime.Parse(toDate)) > 10) throw new Exception("Prevelik vremenski period"); ;
+
+                DataTable data_table_vehicle_data;
                 List<VehicleInvoice> vehicleInvoiceList = new List<VehicleInvoice>();
-                VehicleInvoiceDataContext vehicleInvoiceContext = new VehicleInvoiceDataContext();
-                CustomerDataContext customerContext = new CustomerDataContext();
-                PositionDataContext positionDataContext = new PositionDataContext();
+
+                string query_vehicle_data = @"SELECT _CustomerID	,ErrorCode	,Errortext	,InvoiceAmount	,InvoiceCode	,invoiceDate	,InvoiceID	,Inovicetype	,_payer	,_positions	" +
+                    ",problemsLight	,problemsSevere	,repairOrderNumber	,requestType	,salesPersionId	,salesPersonName	,Team	,vehicleBatteryBuy	,vehicleBatteryId	" +
+                    ",vehicleCommercialType	,vehicleFuelType	,vehicleMake	,vehicleMilage	,vehicleNextCheckDate	,vehicleRegistrationNumber	,vehicleTechnicalType	" +
+                    ",vehicleType	,vehicleTypeDescription	,vehicleTypeDescriptionLong	,vehicleVIN	,vehicleYear	,workingArea	,numinterno  " +
+                    "FROM [_RI_Vega_table_VehicleData] where invoicedate between @fromDate and @toDate";
 
 
-                var st = System.Configuration.ConfigurationManager.ConnectionStrings["ICARDMSConnectionString"].ConnectionString;
+                try
+                {
+        
+                    using (SqlConnection connection = new SqlConnection(connetion_string))
+                    using (SqlCommand command = new SqlCommand(query_vehicle_data, connection))
+                    {
+                        command.Parameters.AddWithValue("@fromDate", fromDate);
+                        command.Parameters.AddWithValue("@toDate", toDate);
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
 
-                var workOrders = (from _RI_Vega_VehicleData in vehicleInvoiceContext._RI_Vega_VehicleDatas
-               
-                                  select _RI_Vega_VehicleData)
-                          
-                                ;
+                        data_table_vehicle_data = new DataTable();
+                        adapter.Fill(data_table_vehicle_data);
+                    }
+                }
 
-                foreach (var workOrder in workOrders)
+                catch (Exception)
+                {
+                    throw;
+                }
+
+
+                foreach (DataRow workOrder in data_table_vehicle_data.Rows)
                 {
                     VehicleInvoice vehicleInvoice = new VehicleInvoice();
                     Customer customer = new Customer();
+                    Customer payer = new Customer();
                     List<Position> positions = new List<Position>();
 
-                    var customerData = (from _RI_Vega_Customer in customerContext._RI_Vega_Customers
-                                        where _RI_Vega_Customer.ID == workOrder._payer
-                                        select _RI_Vega_Customer).FirstOrDefault();
 
-                    customer.birthDate = customerData.birthDate.ToString();
-                    customer.city = customerData.City;
-                    customer.eMail1 = customerData.eMAil1;
-                    customer.eMail2 = customerData.eMail2;
-                    customer.firstName = customerData.FirstName;
-                    customer.id = (int)customerData.ID;
-                    customer.lastName = customerData.lastName;
-                    customer.marketingComment = customerData.marketingComment;
-                    customer.marketingEMail = customerData.marketingEMail;
-                    customer.marketingFax = customerData.marketingFax;
-                    customer.marketingMail = customerData.marketingMail;
-                    customer.marketingPhone = customerData.marketingPhone;
-                    customer.marketingPreferred = customerData.marketingPreferred;
-                    customer.marketingSMSMMS = customerData.marketingSMSMMS.ToString();
-                    customer.marketingWelcomeTerminal = customerData.marketingWelcomeTerminal;
-                    customer.mobilePhone1 = customerData.mobilePhone1;
-                    customer.mobilePhone2 = customerData.mobilePhone2;
-                    customer.name = customerData.name;
-                    customer.phone1 = customerData.Phone1;
-                    customer.phone2 = customerData.Phone2;
-                    customer.sex = customerData.Sex.ToString();
-                    customer.street = customerData.Street;
-                    customer.taxNumber = customerData.TaxNumber;
-                   // customer.taxPayer = customerData.TaxPayer;
-                   // customer.useMaketingData = customerData.marketing;
-                    customer.zip = customerData.ZipCide;
+                    #region customer
 
 
+                    string query_customer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
+                    ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +   
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    "from [_RI_Vega_table_Customer] where ID = @customer";
 
-                    var workOrderPositions = (from _RI_Vega_Position in positionDataContext._RI_Vega_Positions
-                                              where _RI_Vega_Position.numintOt == workOrder._positions
-                                              select _RI_Vega_Position);
+                    DataTable data_table_customer_data;
 
-                    foreach (var workOrderPosition in workOrderPositions)
+                    try
                     {
-                        Position position = new Position();
-                        position.code = workOrderPosition.Code;
-                        position.descirption = workOrderPosition.Description;
-                      //  position.labourTime = (double)workOrderPosition.labourTime;
-                        position.partFamily = workOrderPosition.partFamily.ToString();
-                     //   position.price = (double)workOrderPosition.price;
-                        position.type = workOrderPosition.Type;
-                        positions.Add(position);
 
+                        using (SqlConnection connection = new SqlConnection(connetion_string))
+                        using (SqlCommand command = new SqlCommand(query_customer_data, connection))
+                        {
+                            command.Parameters.AddWithValue("@customer", workOrder["_CustomerID"]);
+                            SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                            data_table_customer_data = new DataTable();
+                            adapter.Fill(data_table_customer_data);
+                        }
+                    }
+
+                    catch (Exception)
+                    {
+                        throw;
                     }
 
 
 
 
-                    vehicleInvoice.customer = customer;
+                    DataRow customerData = data_table_customer_data.Rows[0];
+
+                    customer.birthDate = customerData["birthDate"].ToString();
+                    customer.city = customerData["City"].ToString();
+                    customer.eMail1 = customerData["eMAil1"].ToString();
+                    customer.eMail2 = customerData["eMail2"].ToString();
+                    customer.firstName = customerData["FirstName"].ToString();
+                    customer.id = (int)customerData["ID"];
+                    customer.lastName = customerData["lastName"].ToString();
+                    customer.marketingComment = customerData["marketingComment"].ToString();
+                    customer.marketingEMail = customerData["marketingEMail"].ToString();
+                    customer.marketingFax = customerData["marketingFax"].ToString();
+                    customer.marketingMail = customerData["marketingMail"].ToString();
+                    customer.marketingPhone = customerData["marketingPhone"].ToString();
+                    customer.marketingPreferred = customerData["marketingPreferred"].ToString();
+                    customer.marketingSMSMMS = customerData["marketingSMSMMS"].ToString();
+                    customer.marketingWelcomeTerminal = customerData["marketingWelcomeTerminal"].ToString();
+                    customer.mobilePhone1 = customerData["mobilePhone1"].ToString();
+                    customer.mobilePhone2 = customerData["mobilePhone2"].ToString();
+                    customer.name = customerData["name"].ToString();
+                    customer.phone1 = customerData["Phone1"].ToString();
+                    customer.phone2 = customerData["Phone2"].ToString();
+                    customer.sex = customerData["Sex"].ToString();
+                    customer.street = customerData["Street"].ToString();
+                    customer.taxNumber = customerData["TaxNumber"].ToString();
+                    customer.zip = customerData["ZipCide"].ToString();
+
+                    #endregion
+
+
+                    #region payer
+
+
+                    string query_payer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
+                    ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    "from [_RI_Vega_table_Customer] where ID = @payer";
+
+                    DataTable data_table_payer_data;
+
+                    try
+                    {
+
+                        using (SqlConnection connection = new SqlConnection(connetion_string))
+                        using (SqlCommand command = new SqlCommand(query_payer_data, connection))
+                        {
+                            command.Parameters.AddWithValue("@payer", workOrder["_payer"]);
+                            SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                            data_table_payer_data = new DataTable();
+                            adapter.Fill(data_table_payer_data);
+                        }
+                    }
+
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+
+
+
+
+                    DataRow payerData = data_table_payer_data.Rows[0];
+
+                    payer.birthDate = payerData["birthDate"].ToString();
+                    payer.city = payerData["City"].ToString();
+                    payer.eMail1 = payerData["eMAil1"].ToString();
+                    payer.eMail2 = payerData["eMail2"].ToString();
+                    payer.firstName = payerData["FirstName"].ToString();
+                    payer.id = (int)payerData["ID"];
+                    payer.lastName = payerData["lastName"].ToString();
+                    payer.marketingComment = payerData["marketingComment"].ToString();
+                    payer.marketingEMail = payerData["marketingEMail"].ToString();
+                    payer.marketingFax = payerData["marketingFax"].ToString();
+                    payer.marketingMail = payerData["marketingMail"].ToString();
+                    payer.marketingPhone = payerData["marketingPhone"].ToString();
+                    payer.marketingPreferred = payerData["marketingPreferred"].ToString();
+                    payer.marketingSMSMMS = payerData["marketingSMSMMS"].ToString();
+                    payer.marketingWelcomeTerminal = payerData["marketingWelcomeTerminal"].ToString();
+                    payer.mobilePhone1 = payerData["mobilePhone1"].ToString();
+                    payer.mobilePhone2 = payerData["mobilePhone2"].ToString();
+                    payer.name = payerData["name"].ToString();
+                    payer.phone1 = payerData["Phone1"].ToString();
+                    payer.phone2 = payerData["Phone2"].ToString();
+                    payer.sex = payerData["Sex"].ToString();
+                    payer.street = payerData["Street"].ToString();
+                    payer.taxNumber = payerData["TaxNumber"].ToString();
+                    payer.zip = payerData["ZipCide"].ToString();
+
+                    #endregion
+
+
+                    #region positions
+
+                    string query_positions_data = @"SELECT numintOt,Code,Description,labourTime,labourTimeType,partFamily,price,priceFinal,Type " +
+                    "from [_RI_Vega_table_Positions] where numintOt = @positions";
+
+                    DataTable data_table_positions_data;
+
+                    try
+                    {
+
+                        using (SqlConnection connection = new SqlConnection(connetion_string))
+                        using (SqlCommand command = new SqlCommand(query_positions_data, connection))
+                        {
+                            command.Parameters.AddWithValue("@positions", workOrder["_positions"]);
+                            SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                            data_table_positions_data = new DataTable();
+                            adapter.Fill(data_table_positions_data);
+                        }
+                    }
+
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+
+
+
+                    foreach (DataRow workOrderPosition in data_table_positions_data.Rows)
+                    {
+                        Position position = new Position();
+                        position.code = workOrderPosition["Code"].ToString();
+                        position.descirption = workOrderPosition["Description"].ToString();
+                        position.labourTime = (double)workOrderPosition["labourTime"];
+                        position.partFamily = workOrderPosition["partFamily"].ToString();
+                        position.price = (double)workOrderPosition["price"];
+                        position.type = workOrderPosition["Type"].ToString();
+                        positions.Add(position);
+
+                    }
+
+                    #endregion
+
+
+                    vehicleInvoice.customer = customer; 
+                    vehicleInvoice.payer = payer;
                     vehicleInvoice.positions = positions.ToArray();
                     //vehicleInvoice.payer = workOrder.payer;
                     //vehicleInvoice.problemsLight = workOrder.problemsLight;
                     //vehicleInvoice.problemsSevere = workOrder.problemsSevere;
 
 
-               //     vehicleInvoice.invoiceAmount =(double)workOrder.InvoiceAmount;
-                    vehicleInvoice.invoiceCode = workOrder.InvoiceCode;
-                    vehicleInvoice.invoiceDate = workOrder.Invoicedate.ToString();
-                    vehicleInvoice.invoiceId = (int)workOrder.InvoiceID;
-                    vehicleInvoice.invoiceType = workOrder.Inovicetype;
-            
-                    vehicleInvoice.repairOrderNumber = (int)workOrder.repairOrderNumber;
-                    vehicleInvoice.requestType = workOrder.requestType;
-                    vehicleInvoice.salesPersonId = workOrder.salesPersionId;
-                    vehicleInvoice.salesPersonName = workOrder.salesPersonName;
-                    vehicleInvoice.team = workOrder.Team;
-                    vehicleInvoice.vehicleBatteryBuy = workOrder.vehicleBatteryBuy;
-                    vehicleInvoice.vehicleBatteryId = workOrder.vehicleBatteryId;
-                    vehicleInvoice.vehicleCommercialType = workOrder.vehicleCommercialType;
-                    vehicleInvoice.vehicleFuelType = workOrder.vehicleFuelType;
-                    vehicleInvoice.vehicleMake = workOrder.vehicleMake;
-                    vehicleInvoice.vehicleMilage = (int)workOrder.vehicleMilage;
-                    vehicleInvoice.vehicleNextCheckDate = workOrder.vehicleNextCheckDate;
-                    vehicleInvoice.vehicleRegistrationNumber = workOrder.vehicleRegistrationNumber;
-                    vehicleInvoice.vehicleTechnicalType = workOrder.vehicleTechnicalType;
-                    vehicleInvoice.vehicleType = workOrder.vehicleType;
-                    vehicleInvoice.vehicleTypeDescription = workOrder.vehicleTypeDescription;
-                    vehicleInvoice.vehicleTypeDescriptionLong = workOrder.vehicleTypeDescriptionLong;
-                    vehicleInvoice.vehicleVIN = workOrder.vehicleVIN;
-                    vehicleInvoice.vehicleYear = workOrder.vehicleYear.ToString();
-                    vehicleInvoice.workingArea = workOrder.workingArea;
+                    vehicleInvoice.invoiceAmount =(double)workOrder["InvoiceAmount"];
+                    vehicleInvoice.invoiceCode = workOrder["InvoiceCode"].ToString();
+                    vehicleInvoice.invoiceDate = workOrder["Invoicedate"].ToString();
+                    vehicleInvoice.invoiceId = (int)workOrder["InvoiceID"];
+                    vehicleInvoice.invoiceType = workOrder["Inovicetype"].ToString();
 
 
-
-
-
-
+                    vehicleInvoice.repairOrderNumber = (int)workOrder["repairOrderNumber"];
+                    vehicleInvoice.requestType = workOrder["requestType"].ToString();
+                    vehicleInvoice.salesPersonId = workOrder["salesPersionId"].ToString();
+                    vehicleInvoice.salesPersonName = workOrder["salesPersonName"].ToString();
+                    vehicleInvoice.team = workOrder["Team"].ToString();
+                    vehicleInvoice.vehicleBatteryBuy = workOrder["vehicleBatteryBuy"].ToString();
+                    vehicleInvoice.vehicleBatteryId = workOrder["vehicleBatteryId"].ToString();
+                    vehicleInvoice.vehicleCommercialType = workOrder["vehicleCommercialType"].ToString();
+                    vehicleInvoice.vehicleFuelType = workOrder["vehicleFuelType"].ToString();
+                    vehicleInvoice.vehicleMake = workOrder["vehicleMake"].ToString();
+                    vehicleInvoice.vehicleMilage = (int)workOrder["vehicleMilage"];
+                    vehicleInvoice.vehicleNextCheckDate = workOrder["vehicleNextCheckDate"].ToString();
+                    vehicleInvoice.vehicleRegistrationNumber = workOrder["vehicleRegistrationNumber"].ToString();
+                    vehicleInvoice.vehicleTechnicalType = workOrder["vehicleTechnicalType"].ToString();
+                    vehicleInvoice.vehicleType = workOrder["vehicleType"].ToString();
+                    vehicleInvoice.vehicleTypeDescription = workOrder["vehicleTypeDescription"].ToString();
+                    vehicleInvoice.vehicleTypeDescriptionLong = workOrder["vehicleTypeDescriptionLong"].ToString();
+                    vehicleInvoice.vehicleVIN = workOrder["vehicleVIN"].ToString();
+                    vehicleInvoice.vehicleYear = workOrder["vehicleYear"].ToString();
+                    vehicleInvoice.workingArea = workOrder["workingArea"].ToString();
 
 
                     vehicleInvoiceList.Add(vehicleInvoice);
 
-
                 }
-
-
 
                 return vehicleInvoiceList.ToArray();
             }
@@ -237,8 +378,7 @@ namespace VegaHitAutoWebService
             {
                 VehicleInvoice vehicleInvoice = new VehicleInvoice();
                 vehicleInvoice.errorCode = "901";
-                if(ex is FormatException) vehicleInvoice.errorText = "Doslo je do greske u formatu";
-                else if(ex is System.Data.SqlClient.SqlException) vehicleInvoice.errorText = "Greska u povezivanju na sql " + ex.Message ;
+                if(ex is FormatException || ex is System.Data.SqlClient.SqlException) vehicleInvoice.errorText = "Doslo je do greske u formatu";
                 else vehicleInvoice.errorText = "Opsta greska " + ex.Message;
                 VehicleInvoice[] vehicleInvoices = new VehicleInvoice[1];
                 vehicleInvoices[0] = vehicleInvoice;
