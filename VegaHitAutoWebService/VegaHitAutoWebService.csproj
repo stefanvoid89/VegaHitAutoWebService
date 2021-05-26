@@ -117,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Customer.cs" />
+    <Compile Include="Classes\MarketingInformation.cs" />
     <Compile Include="Classes\Position.cs" />
     <Compile Include="Classes\Problem.cs" />
     <Compile Include="Classes\UserInfo.cs" />

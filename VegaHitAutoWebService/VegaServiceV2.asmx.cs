@@ -150,7 +150,7 @@ namespace VegaHitAutoWebService
 
                     string query_customer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
                     ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +
-                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide , isCompany " +
                     "from [_RI_Vega_table_Customer] where ID = @customer";
 
                     DataTable data_table_customer_data;
@@ -185,6 +185,7 @@ namespace VegaHitAutoWebService
                     customer.eMail2 = customerData["eMail2"].ToString();
                     customer.firstName = customerData["FirstName"].ToString();
                     customer.id = (int)customerData["ID"];
+                    customer.idSpecified = true;
                     customer.lastName = customerData["lastName"].ToString();
                     customer.marketingComment = customerData["marketingComment"].ToString();
                     customer.marketingEMail = customerData["marketingEMail"].ToString();
@@ -203,6 +204,8 @@ namespace VegaHitAutoWebService
                     customer.street = customerData["Street"].ToString();
                     customer.taxNumber = customerData["TaxNumber"].ToString();
                     customer.zip = customerData["ZipCide"].ToString();
+                    customer.isCompany = Convert.ToBoolean(customerData["isCompany"]);
+                    customer.isCompanySpecified = true;
 
                     #endregion
 
@@ -212,7 +215,7 @@ namespace VegaHitAutoWebService
 
                     string query_payer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
                     ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +
-                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide, isCompany " +
                     "from [_RI_Vega_table_Customer] where ID = @payer";
 
                     DataTable data_table_payer_data;
@@ -247,6 +250,7 @@ namespace VegaHitAutoWebService
                     payer.eMail2 = payerData["eMail2"].ToString();
                     payer.firstName = payerData["FirstName"].ToString();
                     payer.id = (int)payerData["ID"];
+                    payer.idSpecified = true;
                     payer.lastName = payerData["lastName"].ToString();
                     payer.marketingComment = payerData["marketingComment"].ToString();
                     payer.marketingEMail = payerData["marketingEMail"].ToString();
@@ -265,6 +269,8 @@ namespace VegaHitAutoWebService
                     payer.street = payerData["Street"].ToString();
                     payer.taxNumber = payerData["TaxNumber"].ToString();
                     payer.zip = payerData["ZipCide"].ToString();
+                    payer.isCompany = Convert.ToBoolean(payerData["isCompany"]);
+                    payer.isCompanySpecified = true;
 
                     #endregion
 
@@ -282,10 +288,12 @@ namespace VegaHitAutoWebService
                     vehicleInvoice.invoiceCode = workOrder["InvoiceCode"].ToString();
                     vehicleInvoice.invoiceDate = workOrder["Invoicedate"].ToString();
                     vehicleInvoice.invoiceId = (int)workOrder["InvoiceID"];
+                    vehicleInvoice.invoiceIdSpecified = true;
                     vehicleInvoice.invoiceType = workOrder["invoiceType"].ToString();
 
 
                     vehicleInvoice.repairOrderNumber = (int)workOrder["repairOrderNumber"];
+                    vehicleInvoice.repairOrderNumberSpecified = true;
                     vehicleInvoice.requestType = workOrder["requestType"].ToString();
                     vehicleInvoice.salesPersonId = workOrder["salesPersionId"].ToString();
                     vehicleInvoice.salesPersonName = workOrder["salesPersonName"].ToString();
@@ -296,6 +304,7 @@ namespace VegaHitAutoWebService
                     vehicleInvoice.vehicleFuelType = workOrder["vehicleFuelType"].ToString();
                     vehicleInvoice.vehicleMake = workOrder["vehicleMake"].ToString();
                     vehicleInvoice.vehicleMilage = (int)workOrder["vehicleMilage"];
+                    vehicleInvoice.vehicleMilageSpecified = true;
                     vehicleInvoice.vehicleNextCheckDate = workOrder["vehicleNextCheckDate"].ToString();
                     vehicleInvoice.vehicleRegistrationNumber = workOrder["vehicleRegistrationNumber"].ToString();
                     vehicleInvoice.vehicleTechnicalType = workOrder["vehicleTechnicalType"].ToString();
@@ -398,7 +407,7 @@ namespace VegaHitAutoWebService
 
                     string query_customer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
                     ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +
-                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide , isCompany " +
                     "from [_RI_Vega_table_Customer] where ID = @customer";
 
                     DataTable data_table_customer_data;
@@ -433,6 +442,7 @@ namespace VegaHitAutoWebService
                     customer.eMail2 = customerData["eMail2"].ToString();
                     customer.firstName = customerData["FirstName"].ToString();
                     customer.id = (int)customerData["ID"];
+                    customer.idSpecified = true;
                     customer.lastName = customerData["lastName"].ToString();
                     customer.marketingComment = customerData["marketingComment"].ToString();
                     customer.marketingEMail = customerData["marketingEMail"].ToString();
@@ -451,6 +461,8 @@ namespace VegaHitAutoWebService
                     customer.street = customerData["Street"].ToString();
                     customer.taxNumber = customerData["TaxNumber"].ToString();
                     customer.zip = customerData["ZipCide"].ToString();
+                    customer.isCompany = Convert.ToBoolean(customerData["isCompany"]);
+                    customer.isCompanySpecified = true;
 
                     #endregion
 
@@ -460,7 +472,7 @@ namespace VegaHitAutoWebService
 
                     string query_payer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
                     ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +
-                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide , isCompany " +
                     "from [_RI_Vega_table_Customer] where ID = @payer";
 
                     DataTable data_table_payer_data;
@@ -495,6 +507,7 @@ namespace VegaHitAutoWebService
                     payer.eMail2 = payerData["eMail2"].ToString();
                     payer.firstName = payerData["FirstName"].ToString();
                     payer.id = (int)payerData["ID"];
+                    payer.idSpecified = true;
                     payer.lastName = payerData["lastName"].ToString();
                     payer.marketingComment = payerData["marketingComment"].ToString();
                     payer.marketingEMail = payerData["marketingEMail"].ToString();
@@ -513,6 +526,8 @@ namespace VegaHitAutoWebService
                     payer.street = payerData["Street"].ToString();
                     payer.taxNumber = payerData["TaxNumber"].ToString();
                     payer.zip = payerData["ZipCide"].ToString();
+                    payer.isCompany = Convert.ToBoolean(payerData["isCompany"]);
+                    payer.isCompanySpecified = true;
 
                     #endregion
 
@@ -530,10 +545,12 @@ namespace VegaHitAutoWebService
                     vehicleInvoice.invoiceCode = workOrder["InvoiceCode"].ToString();
                     vehicleInvoice.invoiceDate = workOrder["Invoicedate"].ToString();
                     vehicleInvoice.invoiceId = (int)workOrder["InvoiceID"];
+                    vehicleInvoice.invoiceIdSpecified = true;
                     vehicleInvoice.invoiceType = workOrder["invoiceType"].ToString();
 
 
                     vehicleInvoice.repairOrderNumber = (int)workOrder["repairOrderNumber"];
+                    vehicleInvoice.repairOrderNumberSpecified = true;
                     vehicleInvoice.requestType = workOrder["requestType"].ToString();
                     vehicleInvoice.salesPersonId = workOrder["salesPersionId"].ToString();
                     vehicleInvoice.salesPersonName = workOrder["salesPersonName"].ToString();
@@ -544,6 +561,7 @@ namespace VegaHitAutoWebService
                     vehicleInvoice.vehicleFuelType = workOrder["vehicleFuelType"].ToString();
                     vehicleInvoice.vehicleMake = workOrder["vehicleMake"].ToString();
                     vehicleInvoice.vehicleMilage = (int)workOrder["vehicleMilage"];
+                    vehicleInvoice.vehicleMilageSpecified = true;
                     vehicleInvoice.vehicleNextCheckDate = workOrder["vehicleNextCheckDate"].ToString();
                     vehicleInvoice.vehicleRegistrationNumber = workOrder["vehicleRegistrationNumber"].ToString();
                     vehicleInvoice.vehicleTechnicalType = workOrder["vehicleTechnicalType"].ToString();
@@ -648,8 +666,8 @@ namespace VegaHitAutoWebService
 
 
                     string query_customer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
-                    ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +   
-                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide , isCompany " +
                     "from [_RI_Vega_table_Customer] where ID = @customer";
 
                     DataTable data_table_customer_data;
@@ -684,6 +702,7 @@ namespace VegaHitAutoWebService
                     customer.eMail2 = customerData["eMail2"].ToString();
                     customer.firstName = customerData["FirstName"].ToString();
                     customer.id = (int)customerData["ID"];
+                    customer.idSpecified = true;
                     customer.lastName = customerData["lastName"].ToString();
                     customer.marketingComment = customerData["marketingComment"].ToString();
                     customer.marketingEMail = customerData["marketingEMail"].ToString();
@@ -702,6 +721,8 @@ namespace VegaHitAutoWebService
                     customer.street = customerData["Street"].ToString();
                     customer.taxNumber = customerData["TaxNumber"].ToString();
                     customer.zip = customerData["ZipCide"].ToString();
+                    customer.isCompany = Convert.ToBoolean(customerData["isCompany"]);
+                    customer.isCompanySpecified = true;
 
                     #endregion
 
@@ -711,7 +732,7 @@ namespace VegaHitAutoWebService
 
                     string query_payer_data = @"SELECT birthDate  ,City   ,eMAil1 ,eMail2 ,FirstName  ,ID ,lastName   ,marketingComment" +
                     ",marketingEMail ,marketingFax   ,marketingMail  ,marketingPhone ,marketingPreferred ,marketingSMSMMS    ,marketingWelcomeTerminal" +
-                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide " +
+                    ",mobilePhone1   ,mobilePhone2   ,name   ,Phone1 ,Phone2 ,Sex    ,Street ,TaxNumber  ,TaxPayer   ,useMarketingData   ,ZipCide , isCompany " +
                     "from [_RI_Vega_table_Customer] where ID = @payer";
 
                     DataTable data_table_payer_data;
@@ -746,6 +767,7 @@ namespace VegaHitAutoWebService
                     payer.eMail2 = payerData["eMail2"].ToString();
                     payer.firstName = payerData["FirstName"].ToString();
                     payer.id = (int)payerData["ID"];
+                    payer.idSpecified = true;
                     payer.lastName = payerData["lastName"].ToString();
                     payer.marketingComment = payerData["marketingComment"].ToString();
                     payer.marketingEMail = payerData["marketingEMail"].ToString();
@@ -764,6 +786,8 @@ namespace VegaHitAutoWebService
                     payer.street = payerData["Street"].ToString();
                     payer.taxNumber = payerData["TaxNumber"].ToString();
                     payer.zip = payerData["ZipCide"].ToString();
+                    payer.isCompany = Convert.ToBoolean(payerData["isCompany"]);
+                    payer.isCompanySpecified = true;
 
                     #endregion
 
@@ -824,10 +848,12 @@ namespace VegaHitAutoWebService
                     vehicleInvoice.invoiceCode = workOrder["InvoiceCode"].ToString();
                     vehicleInvoice.invoiceDate = workOrder["Invoicedate"].ToString();
                     vehicleInvoice.invoiceId = (int)workOrder["InvoiceID"];
+                    vehicleInvoice.invoiceIdSpecified = true;
                     vehicleInvoice.invoiceType = workOrder["Inovicetype"].ToString();
 
 
                     vehicleInvoice.repairOrderNumber = (int)workOrder["repairOrderNumber"];
+                    vehicleInvoice.repairOrderNumberSpecified = true;
                     vehicleInvoice.requestType = workOrder["requestType"].ToString();
                     vehicleInvoice.salesPersonId = workOrder["salesPersionId"].ToString();
                     vehicleInvoice.salesPersonName = workOrder["salesPersonName"].ToString();
@@ -838,6 +864,7 @@ namespace VegaHitAutoWebService
                     vehicleInvoice.vehicleFuelType = workOrder["vehicleFuelType"].ToString();
                     vehicleInvoice.vehicleMake = workOrder["vehicleMake"].ToString();
                     vehicleInvoice.vehicleMilage = (int)workOrder["vehicleMilage"];
+                    vehicleInvoice.vehicleMilageSpecified = true;
                     vehicleInvoice.vehicleNextCheckDate = workOrder["vehicleNextCheckDate"].ToString();
                     vehicleInvoice.vehicleRegistrationNumber = workOrder["vehicleRegistrationNumber"].ToString();
                     vehicleInvoice.vehicleTechnicalType = workOrder["vehicleTechnicalType"].ToString();

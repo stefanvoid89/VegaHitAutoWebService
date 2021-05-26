@@ -16,6 +16,8 @@ namespace VegaHitAutoWebService.Classes
         
         private string birthDateField;
 
+       private MarketingInformation[] brandMarketingDataField;
+
         private string cityField;
 
         private string eMail1Field;
@@ -72,6 +74,9 @@ namespace VegaHitAutoWebService.Classes
 
         private string zipField;
 
+        private bool isCompanyField;
+
+        private bool isCompanyFieldSpecified;
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
         public string birthDate
@@ -475,6 +480,49 @@ namespace VegaHitAutoWebService.Classes
                 this.zipField = value;
             }
         }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(IsNullable = true)]
+        public System.Nullable<bool> isCompany
+        {
+
+            get
+            {
+                return this.isCompanyField;
+            }
+            set
+            {
+                this.isCompanyField = (bool)value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool isCompanySpecified
+        {
+            get
+            {
+                return this.isCompanyFieldSpecified;
+            }
+            set
+            {
+                this.isCompanyFieldSpecified = value;
+            }
+        }
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("brandMarketingData", IsNullable = true)]
+        public MarketingInformation[] brandMarketingData
+        {
+            get
+            {
+                return this.brandMarketingDataField;
+            }
+            set
+            {
+                this.brandMarketingDataField = value;
+            }
+        }
     }
+
 
 }
